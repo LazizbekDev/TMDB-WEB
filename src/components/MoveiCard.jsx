@@ -1,32 +1,37 @@
 import { useEffect, useState } from "react";
-import { FaEye, FaPlay } from "react-icons/fa";
+import { FaEye, FaPlay, FaExpand } from "react-icons/fa";
 
 function MovieCard({ movie }) {
   const [teaserUrl, setTeaserUrl] = useState("");
   const [error, setError] = useState(null);
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
-  useEffect(() => {
-    const fetchTeaserUrl = async () => {
-      try {
-        const response = await fetch(
-          `https://tmdb-hr4k.onrender.com/api/file/${movie.teaser}`,
-          {
-            headers: {
-              "telegram-init-data": window.Telegram.WebApp.initData,
-            },
-          }
-        );
-        if (!response.ok) throw new Error("Video URL xatosi");
-        const data = await response.json();
-        setTeaserUrl(data.fileUrl);
-      } catch (err) {
-        console.error(err);
-        setError("Teaser yuklanmadi");
-      }
-    };
-    if (movie.teaser) fetchTeaserUrl();
-  }, [movie.teaser]);
+  const loadTeaserUrl = async () => {
+    if (movie.teaserpath) {
+      setTeaserUrl(movie.teaserpath);
+      setIsPlaying(true);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `https://tmdb-hr4k.onrender.com/api/file/${movie.teaser}`,
+        {
+          headers: {
+            "telegram-init-data": window.Telegram.WebApp.initData,
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Video URL xatosi");
+      const data = await response.json();
+      setTeaserUrl(data.fileUrl);
+      setIsPlaying(true);
+    } catch (err) {
+      console.error(err);
+      setError("Teaser yuklanmadi");
+    }
+  };
 
   const handleSendToBot = () => {
     const botUsername = "tmdb_listbot";
@@ -40,8 +45,8 @@ function MovieCard({ movie }) {
   return (
     <div className="flex flex-col h-full bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden shadow-md hover:shadow-xl hover:scale-[1.015] transition-all duration-300 group">
       {/* Teaser Preview */}
-      <div className="relative h-[200px] bg-black">
-        {teaserUrl ? (
+      <div className="relative h-[200px] bg-black flex items-center justify-center">
+        {isPlaying && teaserUrl ? (
           <>
             <video
               src={teaserUrl}
@@ -57,20 +62,23 @@ function MovieCard({ movie }) {
             </div>
             <button
               onClick={handleFullScreenToggle}
-              className="absolute bottom-2 right-2 bg-white/80 text-black text-xs px-2 py-1 rounded hover:bg-white transition"
+              className="absolute bottom-2 right-2 bg-white/80 text-black text-xs px-2 py-1 rounded hover:bg-white transition flex items-center gap-1"
             >
-              To‘liq ko‘rish
+              <FaExpand className="text-xs" /> To‘liq
             </button>
           </>
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
-            {error || "Video yuklanmoqda..."}
-          </div>
+          <button
+            onClick={loadTeaserUrl}
+            className="text-white bg-white/10 hover:bg-white/20 px-4 py-2 rounded text-sm"
+          >
+            {error || "▶️ Teaser ko‘rish"}
+          </button>
         )}
       </div>
 
       {/* Fullscreen modal */}
-      {isFullScreen && (
+      {isFullScreen && teaserUrl && (
         <div
           className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center"
           onClick={handleFullScreenToggle}
