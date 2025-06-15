@@ -9,7 +9,7 @@ function HeroBanner({ featured = [], onSendData }) {
   useEffect(() => {
     const interval = setInterval(() => {
       setActive((prev) => (prev + 1) % featured.length);
-    }, 6000);
+    }, 16000);
     return () => clearInterval(interval);
   }, [featured]);
 
