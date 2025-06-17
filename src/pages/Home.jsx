@@ -50,7 +50,7 @@ function Home() {
     <div className="w-full text-white bg-gradient-to-b from-[#0f0f0f] via-[#111] to-[#1a1a1a] min-h-screen">
       <HeroBanner featured={featured} onSendData={handleSendData} />
       <section className="max-w-7xl mx-auto px-4 py-6">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-between items-center mb-4 mt-12">
           <h2 className="text-2xl font-bold">Barcha Filmlar</h2>
           <select
             value={sortOption}
