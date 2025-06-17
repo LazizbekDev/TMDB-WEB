@@ -17,7 +17,7 @@ function AdminPanel() {
   }, []);
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 my-12">
       <h1 className="text-2xl font-bold mb-4">Admin Panel</h1>
       <Link to="/" className="text-blue-500 hover:underline mb-4 block">Asosiy sahifaga qaytish</Link>
       <AdminMovieList movies={movies} setMovies={setMovies} />
