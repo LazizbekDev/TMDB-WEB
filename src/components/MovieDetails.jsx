@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Film } from "lucide-react";
+import { Helmet } from "react-helmet";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import Button from "./Button";
@@ -24,7 +25,8 @@ function MovieDetails() {
       },
     })
       .then((res) => {
-        if (!res.ok) throw new Error("Film ma’lumotlarini olishda xato yuz berdi");
+        if (!res.ok)
+          throw new Error("Film ma’lumotlarini olishda xato yuz berdi");
         return res.json();
       })
       .then((data) => {
@@ -66,7 +68,6 @@ function MovieDetails() {
 
   return (
     <div className="min-h-screen flex flex-col bg-black/50 backdrop-blur-md text-white">
-      <Navbar />
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6 pt-20">
         {/* Header */}
         <div className="flex items-center gap-2 mb-6 animate-fade-in">
@@ -124,6 +125,21 @@ function MovieDetails() {
             </div>
 
             {/* Movie Info */}
+            <Helmet>
+              <meta charSet="utf-8" />
+              <title>{movie.name}</title>
+                <meta name="description" content={movie.caption} />
+                <meta name="keywords" content={movie.keywords?.join(", ")} />
+                <link rel="canonical" href={`https://tmdb-m3sw.onrender.com/movies/${id}`} />
+                <link rel="favicon"  />
+                {/* Favicon */}
+
+                <meta property="og:title" content={movie.name} />
+                <meta property="og:description" content={movie.caption} />
+                <meta property="og:url" content={`https://tmdb-m3sw.onrender.com/movies/${id}`} />
+                <meta property="og:type" content="video.movie" />
+                <meta property="og:site_name" content="TMDB Telegram Bot" />
+            </Helmet>
             <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2">
               {movie.name}
             </h2>
@@ -134,7 +150,9 @@ function MovieDetails() {
               <p>
                 <strong>Janrlar:</strong>{" "}
                 <span className="text-cyan-400">
-                  {movie.keywords?.length > 0 ? movie.keywords.join(", ") : "Yo‘q"}
+                  {movie.keywords?.length > 0
+                    ? movie.keywords.join(", ")
+                    : "Yo‘q"}
                 </span>
               </p>
               <p>
@@ -185,8 +203,14 @@ function MovieDetails() {
           animation: fadeIn 1s ease-in;
         }
         @keyframes fadeIn {
-          0% { opacity: 0; transform: translateY(10px); }
-          100% { opacity: 1; transform: translateY(0); }
+          0% {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
       `}</style>
     </div>
