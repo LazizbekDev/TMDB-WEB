@@ -62,7 +62,7 @@ function Home() {
   });
 
   return (
-    <div className="min-h-screen flex flex-col bg-black/50 backdrop-blur-md text-white">
+    <div className="min-h-screen flex flex-col">
       <HeroBanner featured={featured} onSendData={handleSendData} />
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6 pt-20">
         {/* Error Message */}
@@ -83,8 +83,8 @@ function Home() {
         {!isLoading && (
           <div className="animate-fade-in">
             <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold flex items-center gap-2">
-                <Film className="w-6 h-6 text-yellow-400" />
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-cyan-400 bg-clip-text text-transparent">
+                <Film className="w-8 h-8 text-yellow-400" />
                 Barcha Filmlar
               </h2>
               <select

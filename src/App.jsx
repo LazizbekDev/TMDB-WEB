@@ -6,7 +6,7 @@ import AdminPanel from "./pages/AdminPanel";
 import EditMovie from "./components/EditMovie";
 import AddMovie from "./components/AddMovie";
 import Navbar from "./components/Navbar";
-import "./index.css";
+import MovieDetails from "./components/MovieDetails";
 
 function App() {
   useEffect(() => {
@@ -20,7 +20,7 @@ function App() {
 
   return (
     <Router>
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col backdrop-blur-md">
         <Navbar />
         <TransitionGroup component={null}>
           <CSSTransition
@@ -30,6 +30,7 @@ function App() {
           >
             <Routes location={location}>
               <Route path="/" element={<Home />} />
+              <Route path="/movie/:id" element={<MovieDetails />} />
               <Route path="/admin" element={<AdminPanel />} />
               <Route path="/admin/edit/:id" element={<EditMovie />} />
               <Route path="/admin/add" element={<AddMovie />} />
@@ -42,12 +43,12 @@ function App() {
       <style jsx global>{`
         .fade-enter {
           opacity: 0;
-          transform: translateY(10px);
+          transform: translateY(20px);
         }
         .fade-enter-active {
           opacity: 1;
           transform: translateY(0);
-          transition: opacity 300ms ease-in, transform 300ms ease-in;
+          transition: opacity 300ms ease-in-out, transform 300ms ease-in-out;
         }
         .fade-exit {
           opacity: 1;
@@ -55,8 +56,8 @@ function App() {
         }
         .fade-exit-active {
           opacity: 0;
-          transform: translateY(10px);
-          transition: opacity 300ms ease-in, transform 300ms ease-in;
+          transform: translateY(20px);
+          transition: opacity 300ms ease-in-out, transform 300ms ease-in-out;
         }
       `}</style>
     </Router>

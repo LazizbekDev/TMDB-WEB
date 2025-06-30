@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Eye, Play, Maximize2 } from "lucide-react"; // Replaced Fa icons with lucide-react
+import { Eye, Play, Maximize2, Info } from "lucide-react"; // Replaced Fa icons with lucide-react
+import Button from "./Button";
 
 function MovieCard({ movie }) {
   const [teaserUrl, setTeaserUrl] = useState("");
@@ -129,7 +130,7 @@ function MovieCard({ movie }) {
           </span>
         </div>
 
-        <p className="text-xs sm:text-sm text-gray-300 line-clamp-2 mb-3 animate-fade-in">
+        <p className="text-xs sm:text-sm text-gray-300 line-clamp-3 mb-3 animate-fade-in">
           {movie.caption}
         </p>
 
@@ -139,15 +140,6 @@ function MovieCard({ movie }) {
             <span className="text-cyan-400">
               {movie.keywords.map((k) => `#${k}`).join(" ")}
             </span>
-          </p>
-          <p>
-            Format: <span className="text-white">{movie.fileType}</span>
-          </p>
-          <p>
-            Hajmi: <span className="text-white">{movie.size}</span>
-          </p>
-          <p>
-            Davomiyligi: <span className="text-white">{movie.duration}</span>
           </p>
         </div>
 
@@ -159,6 +151,13 @@ function MovieCard({ movie }) {
           >
             <Play className="w-4 h-4" /> Ko‘rishni boshlash
           </button>
+          <Button
+            to={`/movie/${movie._id}`}
+            icon={Info}
+            c
+          >
+            Batafsil
+          </Button>
         </div>
       </div>
 
