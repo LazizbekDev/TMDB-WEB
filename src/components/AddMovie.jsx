@@ -19,7 +19,7 @@ function AddMovie() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await fetch('https://tmdb-hr4k.onrender.com/api/movies', {
+      await fetch('https://tmdb-m3sw.onrender.com/api/movies', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

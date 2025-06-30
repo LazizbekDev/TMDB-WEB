@@ -1,4 +1,4 @@
-import MovieCard from "./MoveiCard";
+import MovieCard from "./MovieCard";
 
 function MovieList({ movies, onSendData }) {
   if (!movies.length) {
