@@ -17,7 +17,11 @@ function SimilarMovies() {
   useEffect(() => {
     setIsLoading(true);
     // Fetch movie details to get the movie name
-    fetch(`https://tmdb-m3sw.onrender.com/api/movies/${id}`)
+    fetch(`https://tmdb-m3sw.onrender.com/api/movies/${id}`, {
+      headers: {
+        "telegram-init-data": window.Telegram.WebApp?.initData || "",
+      },
+    })
       .then((res) => {
         if (!res.ok) throw new Error("Film ma’lumotlarini olishda xato yuz berdi");
         return res.json();
@@ -27,7 +31,11 @@ function SimilarMovies() {
       .finally(() => setIsLoading(false));
 
     // Fetch recommendations
-    fetch(`https://tmdb-m3sw.onrender.com/api/recommendations/${id}`)
+    fetch(`https://tmdb-m3sw.onrender.com/api/recommendations/${id}`, {
+      headers: {
+        "telegram-init-data": window.Telegram.WebApp?.initData || "",
+      },
+    })
       .then((res) => {
         if (!res.ok) throw new Error("O‘xshash filmlarni olishda xato yuz berdi");
         return res.json();
@@ -80,6 +88,8 @@ function SimilarMovies() {
             ) : (
               <div className="text-center text-gray-400 text-sm sm:text-base">
                 O‘xshash filmlar topilmadi
+                {console.log(movies)}
+
               </div>
             )}
           </div>
