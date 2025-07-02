@@ -7,6 +7,7 @@ import EditMovie from "./components/EditMovie";
 import AddMovie from "./components/AddMovie";
 import Navbar from "./components/Navbar";
 import MovieDetails from "./components/MovieDetails";
+import SimilarMovies from "./pages/SimilarMovies";
 
 function App() {
   useEffect(() => {
@@ -31,6 +32,7 @@ function App() {
             <Routes location={location}>
               <Route path="/" element={<Home />} />
               <Route path="/movie/:id" element={<MovieDetails />} />
+              <Route path="/movie/:id/similar" element={<SimilarMovies />} />
               <Route path="/admin" element={<AdminPanel />} />
               <Route path="/admin/edit/:id" element={<EditMovie />} />
               <Route path="/admin/add" element={<AddMovie />} />

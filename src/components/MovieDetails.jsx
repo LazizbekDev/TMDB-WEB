@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Film } from "lucide-react";
-import { Helmet } from "react-helmet";
+import { ArrowLeft, Film, Clapperboard, Play, Pause } from "lucide-react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import Button from "./Button";
@@ -9,12 +8,14 @@ import Button from "./Button";
 function MovieDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const videoRef = useRef(null);
   const [movie, setMovie] = useState(null);
   const [teaserUrl, setTeaserUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isVideoLoading, setIsVideoLoading] = useState(false);
   const [error, setError] = useState(null);
   const [videoError, setVideoError] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   // Fetch movie details
   useEffect(() => {
@@ -25,8 +26,7 @@ function MovieDetails() {
       },
     })
       .then((res) => {
-        if (!res.ok)
-          throw new Error("Film ma’lumotlarini olishda xato yuz berdi");
+        if (!res.ok) throw new Error("Film ma’lumotlarini olishda xato yuz berdi");
         return res.json();
       })
       .then((data) => {
@@ -63,11 +63,26 @@ function MovieDetails() {
           setVideoError(err.message);
         })
         .finally(() => setIsVideoLoading(false));
+    } else if (movie?.teaserpath) {
+      setTeaserUrl(movie.teaserpath);
     }
-  }, [movie?.teaser]);
+  }, [movie]);
+
+  // Toggle play/pause for custom controls
+  const togglePlayPause = () => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
 
   return (
-    <div className="min-h-screen flex flex-col bg-black/50 backdrop-blur-md text-white">
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6 pt-20">
         {/* Header */}
         <div className="flex items-center gap-2 mb-6 animate-fade-in">
@@ -97,49 +112,46 @@ function MovieDetails() {
             {/* Teaser Video */}
             <div className="relative w-full h-48 sm:h-64 md:h-80 rounded-lg overflow-hidden mb-4">
               {teaserUrl && !videoError ? (
-                <video
-                  src={teaserUrl}
-                  poster="/assets/placeholder.jpg"
-                  controls
-                  playsInline
-                  className="w-full h-full object-cover"
-                />
+                <>
+                  <video
+                    ref={videoRef}
+                    src={teaserUrl}
+                    controls
+                    playsInline
+                    className="w-full h-full object-cover"
+                    aria-label={`Teaser for ${movie.name}`}
+                    onPlay={() => setIsPlaying(true)}
+                    onPause={() => setIsPlaying(false)}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                  {isVideoLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center z-10">
+                      <div className="w-8 h-8 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                  )}
+                  {videoError && !isVideoLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center z-10">
+                      <div className="text-red-400 text-base">{videoError}</div>
+                    </div>
+                  )}
+                  {/* Custom Play/Pause Button */}
+                  <Button
+                    onClick={togglePlayPause}
+                    icon={isPlaying ? Pause : Play}
+                    className="absolute bottom-2 left-2 bg-yellow-400/80 text-black text-xs px-2 py-1 rounded hover:bg-yellow-400 transition z-20"
+                    aria-label={isPlaying ? "Pause video" : "Play video"}
+                  >
+                    {isPlaying ? "To‘xtatish" : "O‘ynatish"}
+                  </Button>
+                </>
               ) : (
-                <img
-                  src="/assets/placeholder.jpg"
-                  alt={movie.name}
-                  className="w-full h-full object-cover"
-                />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-              {isVideoLoading && (
-                <div className="absolute inset-0 flex items-center justify-center z-10">
-                  <div className="w-8 h-8 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
-                </div>
-              )}
-              {videoError && !isVideoLoading && (
-                <div className="absolute inset-0 flex items-center justify-center z-10">
-                  <div className="text-red-400 text-base">{videoError}</div>
+                <div className="w-full h-full bg-gray-800 flex items-center justify-center text-gray-400 text-sm">
+                  Teaser mavjud emas
                 </div>
               )}
             </div>
 
             {/* Movie Info */}
-            <Helmet>
-              <meta charSet="utf-8" />
-              <title>{movie.name}</title>
-                <meta name="description" content={movie.caption} />
-                <meta name="keywords" content={movie.keywords?.join(", ")} />
-                <link rel="canonical" href={`https://tmdb-m3sw.onrender.com/movies/${id}`} />
-                <link rel="favicon"  />
-                {/* Favicon */}
-
-                <meta property="og:title" content={movie.name} />
-                <meta property="og:description" content={movie.caption} />
-                <meta property="og:url" content={`https://tmdb-m3sw.onrender.com/movies/${id}`} />
-                <meta property="og:type" content="video.movie" />
-                <meta property="og:site_name" content="TMDB Telegram Bot" />
-            </Helmet>
             <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2">
               {movie.name}
             </h2>
@@ -150,48 +162,54 @@ function MovieDetails() {
               <p>
                 <strong>Janrlar:</strong>{" "}
                 <span className="text-cyan-400">
-                  {movie.keywords?.length > 0
-                    ? movie.keywords.join(", ")
-                    : "Yo‘q"}
+                  {movie.keywords?.length > 0 ? movie.keywords.join(", ") : "Yo‘q"}
                 </span>
-              </p>
-              <p>
-                <strong>Fayl turi:</strong> {movie.fileType || "Noma'lum"}
-              </p>
-              <p>
-                <strong>Hajmi:</strong> {movie.size || "Noma'lum"}
-              </p>
-              <p>
-                <strong>Davomiyligi:</strong> {movie.duration || "Noma'lum"}
               </p>
               <p>
                 <strong>Ko‘rishlar soni:</strong> {movie.views || 0}
               </p>
-              <p>
-                <strong>Ko‘rish havolasi:</strong>{" "}
-                {movie.movieUrl ? (
-                  <a
-                    href={movie.movieUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-yellow-400 hover:text-yellow-100 hover:shadow-[0_0_8px_rgba(255,204,0,0.5)] transition duration-300"
-                  >
-                    Ko‘rish
-                  </a>
-                ) : (
-                  "Yo‘q"
-                )}
-              </p>
             </div>
 
-            {/* Back Button */}
+            {/* Navigation to Similar Movies */}
             <Button
+              to={`/movie/${movie._id}/similar`}
+              icon={Clapperboard}
+              gradient
+              className="mt-6 w-full sm:w-auto text-sm px-3 py-1.5"
+            >
+              O‘xshash filmlar
+            </Button>
+
+            {/* Back Button */}
+            {/* Flex justify between buttons */}
+            <div className="mt-4 flex justify-between">
+              <Button
               onClick={() => navigate("/")}
               icon={ArrowLeft}
-              className="mt-6 w-full sm:w-auto"
+              className="mt-6 w-full sm:w-auto text-sm px-3 py-1.5"
             >
               Orqaga
             </Button>
+            {movie.movieUrl ? (
+                <Button
+                  onClick={() => {
+                    const telegramUrl = `https://t.me/tmdb_listbot?start=${movie._id}`;
+                    if (window.Telegram?.WebApp) {
+                      window.Telegram.WebApp.openLink(telegramUrl);
+                    } else {
+                      window.location.href = telegramUrl;
+                    }
+                  }}
+                  gradient
+                  className="text-sm px-3 py-1.5 hover:shadow-[0_0_8px_rgba(255,204,0,0.5)] transition-shadow duration-300"
+                  aria-label={`Watch ${movie.name}`}
+                >
+                  Ko‘rish
+                </Button>
+              ) : (
+                "Yo‘q"
+              )}
+              </div>
           </div>
         )}
       </main>
@@ -203,14 +221,8 @@ function MovieDetails() {
           animation: fadeIn 1s ease-in;
         }
         @keyframes fadeIn {
-          0% {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          0% { opacity: 0; transform: translateY(10px); }
+          100% { opacity: 1; transform: translateY(0); }
         }
       `}</style>
     </div>
