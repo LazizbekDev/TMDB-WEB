@@ -31,11 +31,7 @@ function SimilarMovies() {
       .finally(() => setIsLoading(false));
 
     // Fetch recommendations
-    fetch(`https://tmdb-m3sw.onrender.com/api/recommendations/${id}`, {
-      headers: {
-        "telegram-init-data": window.Telegram.WebApp?.initData || "",
-      },
-    })
+    fetch(`https://tmdb-m3sw.onrender.com/api/recommendations/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error("O‘xshash filmlarni olishda xato yuz berdi");
         return res.json();
