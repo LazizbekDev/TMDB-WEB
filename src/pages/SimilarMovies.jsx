@@ -17,11 +17,7 @@ function SimilarMovies() {
   useEffect(() => {
     setIsLoading(true);
     // Fetch movie details to get the movie name
-    fetch(`https://tmdb-m3sw.onrender.com/api/movies/${id}`, {
-      headers: {
-        "telegram-init-data": window.Telegram.WebApp?.initData || "",
-      },
-    })
+    fetch(`https://tmdb-m3sw.onrender.com/api/movies/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error("Film ma’lumotlarini olishda xato yuz berdi");
         return res.json();
